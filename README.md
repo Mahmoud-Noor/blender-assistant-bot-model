@@ -336,7 +336,7 @@ rag_chain_history = RunnableWithMessageHistory(
 )
 ```
 
-## Question Similarity
+## Question Similarity (Not used)
 
 1: **Setting Up the Question Similarity Task**
 
@@ -453,7 +453,7 @@ answer_grader_history = RunnableWithMessageHistory(
     history_messages_key="history",
 )
 ```
-## Title Maker
+## Title Maker (Not used)
 
 1: **Setting Up the Title Maker Task**
 
