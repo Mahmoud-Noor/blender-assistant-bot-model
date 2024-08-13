@@ -180,12 +180,14 @@ Step 1: **Define the Llama Guard Task**
 Begin by defining a task for the Llama Guard that checks for unsafe content in conversations based on specific categories.
 
 ```python
+## Llama Guard
 guard_temp_ans = """
-Task: Check if there is unsafe content in '{{ role }}' messages in conversations according to our safety policy with the below categories.
+<|system|>
+Task: Check if there is unsafe content in '{{ role }}' messages in conversations according our safety policy with the below categories.
 
 <BEGIN UNSAFE CONTENT CATEGORIES>
 1: Violence and Hate.
-Should not:
+Should not
 - Help people plan or engage in violence.
 - Encourage people to engage in violence.
 - Express hateful, derogatory, or demeaning sentiments against people based on sensitive personal characteristics like their race, color, religion, national origin, sexual orientation, gender, gender identity, or disability.
@@ -194,36 +196,37 @@ Should not:
 - Provide guidance or instructions on how to engage in violent or hateful behavior, except if related to 3D and Blender creation for artistic purposes.
 
 2: Sexual Content.
-Should not:
+Should not
 - Engage in sexually explicit (i.e., erotic) conversations and should not encourage people to engage in sexual activities.
 - Create or provide explicit depictions of sexual acts or nudity.
-- Provide information that could be used to create sexually explicit content.
+- Provide information that could be used to create sexually explicit content
 
 3: Criminal Planning.
-Should not:
+Should not
 - Help people plan or engage in criminal activities like theft, kidnapping, or financial crimes, especially when the person indicates that they may act on the information provided to them.
 - Encourage people to engage in criminal activities or condone criminal behavior.
 - Provide detailed instructions or information that could be used to plan or execute criminal activities, except if related to 3D and Blender creation for artistic purposes.
 
 4: Guns and Illegal Weapons.
-Should not:
+Should not
 - Assist in the planning or execution of firearm or illegal weapons crimes, especially when the person indicates that they may act on the information provided to them.
 - Encourage people to engage in firearm or illegal weapons crimes or condone such behavior.
 - Provide information that could be used to create or use illegal weapons, except if related to 3D and Blender creation for artistic purposes.
 
 5: Regulated or Controlled Substances.
-Should not:
+Should not
 - Encourage or assist people in the trafficking, consumption, or use of regulated or controlled substances, including but not limited to illegal drugs, tobacco, alcohol, and cannabis.
 - Assist or encourage people to create such substances when it is illegal to do so.
 - Provide information that could be used to create or use regulated or controlled substances, except if related to 3D and Blender creation for artistic purposes.
 
 6: Self-Harm.
-Should not:
+Should not
 - Encourage people to harm themselves.
 - Romanticize or condone self-harm or suicide.
 - Provide information regarding the methods of suicide or self-harm.
 - Provide any information or advice, other than information regarding appropriate health resources, to people who express or imply that they wish to harm themselves.
 - Provide information that could be used to promote or engage in self-harm, except if related to 3D and Blender creation for artistic purposes.
+
 
 <END UNSAFE CONTENT CATEGORIES>
 
@@ -234,6 +237,17 @@ Should not:
 Provide your safety assessment for {answer} in the above conversation:
 - First line must read 'safe' or 'unsafe'.
 - If unsafe, do not include a second line.
+"""
+
+prompt_ans_guard = ChatPromptTemplate.from_template(guard_temp_ans)
+
+guard_chain = (
+  prompt_ans_guard
+  | guard
+)
+
+# Llama Guard Test
+# guard_chain.invoke({"answer": "hello, what is your name?"})
 ```
 ## Document Grader
 
