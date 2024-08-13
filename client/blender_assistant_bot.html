@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blender Assistant Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+</head>
+
+<body class="selection:bg-[#f5dd90] selection:text-[#17100e] bg-[#17100e] text-white h-screen flex flex-col poppins-bold">
+    <div class="outline outline-2 outline-[#332D2B] flex flex-grow">
+        <!-- Sidebar -->
+        <aside class="max-w-64 w-full bg-[#17100e] p-4 flex flex-col">
+            <div class="rounded-md outline outline-2 outline-[#332d2b] inline-flex items-center space-x-1 py-1 px-1">
+                <button class="max-h-[36px] py-2 bg-[#ffffff] text-black rounded flex-1 flex justify-center items-center">
+                    <img src="static/bab.svg" class="w-6 h-6" alt="BAB">
+                </button>
+                <button class="max-h-[36px] py-2 bg-[#17100e] text-white rounded flex-1 flex justify-center items-center hover:bg-[#332d2b]">
+                    <img src="static/new-chat.svg" class="w-5 h-5" alt="New Chat">
+                </button>
+            </div>
+            <nav class="max-w-64 my-10 space-y-4" id="historyContainer">
+                <!-- Dynamic history items will be appended here -->
+            </nav>
+            <div class="flex-1"></div>
+            <button class="flex-2 flex justify-center items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#e7dbd3] via-[#f77eb8] to-[#f74b74] text-[#17100e] font-bold rounded-lg mt-4 text-sm">
+                <img src="static/premuim-logo.svg" class="p-[3px] w-6 h-6" alt="BAB">
+                <p>View Premium Plans</p>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="outline outline-2 outline-[#332D2B] flex flex-col flex-grow overflow-hidden">
+            <!-- Header -->
+            <header class="flex items-center justify-between p-4 bg-[#17100e] outline outline-2 outline-[#332D2B]">
+                <h1 class="bg-gradient-to-r from-[#e8d7d1] via-[#ed6f55] to-[#39a455] bg-clip-text text-transparent text-4xl font-bold px-4">Blender Assistant Bot</h1>
+                <div class="rounded-md outline outline-2 outline-[#332d2b] inline-flex items-center space-x-1 py-1 px-1 text-sm">
+                    <button class="px-4 py-2 bg-[#17100e] text-white rounded poppins-regular hover:bg-[#332D2B]">Help Center</button>
+                    <button class="px-4 py-2 bg-[#ffffff] text-black rounded poppins-semibold">View profile</button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="outline outline-2 outline-[#332D2B] w-full flex-grow bg-black p-8 text-sm poppins-regular">
+                <div class="flex flex-col w-full max-w-4xl mx-auto space-y-8">
+                    <h2 class="text-4xl poppins-bold text-center">Let's Start Blendering!</h2>
+                    <hr class="w-full h-[2px] bg-[#332d2b] border-0 rounded">
+                    
+                    <div id="messagesContainer" class="space-y-8"></div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="relative p-4 bg-black">
+                <div class="flex items-center w-full max-w-4xl mx-auto">
+                    <div class="relative flex items-center w-full">
+                        <textarea id="messageInput" placeholder="Message BAB..." class="flex-grow px-4 py-3 rounded-lg bg-[#332D2B] text-white poppins-regular text-sm resize-none overflow-auto pr-16" rows="1"></textarea>
+                        <button id="sendMessage" class="absolute inset-y-0 right-0 px-4 py-2 rounded-lg flex items-center hover:bg-[#355]">
+                            <img src="static/send.svg" alt="Send" class="w-3 h-3">
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {  
+            let firstMessage = false;
+            function addHistoryItem(question, response) {
+                // Only add the history item if it doesn't already exist
+                const historyItem = $('<a>')
+                    .addClass('block text-[#17100e] py-2 px-4 rounded-md bg-white poppins-regular text-sm history-item')
+                    .attr('href', '#')
+                    .text(question)
+                    .on('click', function() {
+                        // Clear previous content
+                        $('#messagesContainer').empty();
+
+                        // Add the question as a button-like div
+                        const questionDiv = $('<div>')
+                            .addClass('w-1/4 px-6 py-3 bg-[#332d2b] text-white rounded-lg ml-auto')
+                            .text(question);
+
+                        // Create the response container
+                        const responseContainer = $('<div>')
+                            .addClass('flex w-full');
+
+                        // Create the outlined box for the response
+                        const responseBox = $('<div>')
+                            .addClass('outline outline-[#332D2B] outline-2 bg-[#17100e] p-6 rounded-lg space-y-4 poppins-regular');
+
+                        // Create the header section for the response
+                        const headerSection = $('<div>')
+                            .addClass('flex items-center space-x-4');
+
+                        // Add the BAB icon
+                        const iconWrapper = $('<div>')
+                            .addClass('p-2 outline outline-2 outline-[#332D2B] text-black rounded flex justify-center items-center');
+
+                        const icon = $('<img>')
+                            .attr('src', 'static/bab-white.svg')
+                            .addClass('w-6 h-6')
+                            .attr('alt', 'BAB');
+
+                        iconWrapper.append(icon);
+
+                        // Add the response title (if applicable, otherwise omit or use a generic title)
+                        const responseTitle = $('<h3>')
+                            .addClass('text-xl poppins-bold')
+                            .text('Create an Object in Blender'); // Adjust this as needed
+
+                        // Add the response content (e.g., list and note)
+                        const responseContent = $('<p>').text(response); // Ensure response contains the text for response
+
+                        // Append the title and content to the response box
+                        headerSection.append(iconWrapper).append(responseTitle);
+                        responseBox.append(headerSection).append(responseContent);
+
+                        // Add to the response container
+                        responseContainer.append(responseBox);
+
+                        // Append the response container to the messages container
+                        $('#messagesContainer').append(questionDiv).append(responseContainer);
+
+                        // Optionally, add the new interaction to history
+                        // addHistoryItem(message, data.result); // Uncomment if needed
+                    });
+                
+                if (!firstMessage) {
+                    $('#historyContainer').append(historyItem);
+                    firstMessage = true;
+            }
+        }
+            
+            // Handle sending a new message
+            $('#sendMessage').on('click', function() {
+                const message = $('#messageInput').val().trim();
+                if (message) {
+                    // Display the user's message in the messages container
+                    const userMessageElement = $('<div>')
+                        .addClass('w-1/4 px-6 py-3 bg-[#332d2b] text-white rounded-lg ml-auto')
+                        .text(message);
+                    $('#messagesContainer').append(userMessageElement);
+
+                    // Send the message to the server
+                    $.post('/submit/', { question: message }, function(data) {
+                        // Create the response container
+                        const responseContainer = $('<div>')
+                            .addClass('flex w-full');
+
+                        // Create the outlined box for the response
+                        const responseBox = $('<div>')
+                            .addClass('outline outline-[#332D2B] outline-2 bg-[#17100e] p-6 rounded-lg space-y-4 poppins-regular');
+
+                        // Create the header section for the response
+                        const headerSection = $('<div>')
+                            .addClass('flex items-center space-x-4');
+
+                        // Add the BAB icon
+                        const iconWrapper = $('<div>')
+                            .addClass('p-2 outline outline-2 outline-[#332D2B] text-black rounded flex space-x-2 justify-center items-center');
+
+                        const icon = $('<img>')
+                            .attr('src', 'static/bab-white.svg')
+                            .addClass('w-6 h-6')
+                            .attr('alt', 'BAB');
+
+                        iconWrapper.append(icon);
+
+                        // Add the response title (if applicable, otherwise omit or use a generic title)
+                        const responseTitle = $('<h3>')
+                            .addClass('text-white text-lg poppins-bold')
+                            .text('BAB'); // Adjust this as needed
+                        
+                        iconWrapper.append(responseTitle);
+
+                        // Add the response content (e.g., list and note)
+                        const responseContent = $('<div>').html(data.result); // Ensure data.result contains the text for response
+
+                        // Append the title and content to the response box
+                        headerSection.append(iconWrapper);
+                        responseBox.append(headerSection).append(responseContent);
+
+                        // Add to the response container
+                        responseContainer.append(responseBox);
+
+                        // Append the response container to the messages container
+                        $('#messagesContainer').append(responseContainer);
+
+                        // Add the new interaction to history (optional if you need history)
+                        addHistoryItem(message, data.result);
+                    });
+
+                    // Clear the input field
+                    $('#messageInput').val('');
+                }
+            });
+
+
+            $('#messageInput').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    if (e.shiftKey) {
+                        // Add a new line if Shift + Enter is pressed
+                        const cursorPosition = this.selectionStart;
+                        const value = $(this).val();
+                        $(this).val(value.substring(0, cursorPosition) + "\n" + value.substring(cursorPosition));
+                        this.selectionStart = this.selectionEnd = cursorPosition + 1;
+                        e.preventDefault();
+                    } else {
+                        // Send the message if Enter is pressed without Shift
+                        $('#sendMessage').click();
+                        e.preventDefault(); // Prevents adding a new line
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
